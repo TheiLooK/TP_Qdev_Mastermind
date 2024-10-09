@@ -13,12 +13,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Test d'une partie:")
-public class TestPartie {
+class TestPartie {
     private static final Joueur JOUEUR = new Joueur("Alice");
     private static final String MOT_CORRECT = "SOLID";
     private static final String MOT_INCORRECT = "DXXXX";
@@ -80,7 +79,7 @@ public class TestPartie {
     }
 
     private void givenPartieEnregistree(Partie partie) {
-        when(partieRepository.getPartieEnregistree(eq(JOUEUR)))
+        when(partieRepository.getPartieEnregistree(JOUEUR))
                 .thenReturn(Optional.of(partie));
     }
 }

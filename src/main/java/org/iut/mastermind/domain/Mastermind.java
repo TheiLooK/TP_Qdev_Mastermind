@@ -8,7 +8,6 @@ import org.iut.mastermind.domain.proposition.Reponse;
 import org.iut.mastermind.domain.tirage.MotsRepository;
 import org.iut.mastermind.domain.tirage.ServiceNombreAleatoire;
 import org.iut.mastermind.domain.tirage.ServiceTirageMot;
-import java.util.Optional;
 
 public class Mastermind {
     private final PartieRepository partieRepository;
@@ -20,54 +19,38 @@ public class Mastermind {
     }
 
     // on récupère éventuellement la partie enregistrée pour le joueur
-    // si il y a une partie en cours, on renvoie false (pas de nouvelle partie)
+    // s'il y a une partie en cours, on renvoie false (pas de nouvelle partie)
     // sinon on utilise le service de tirage aléatoire pour obtenir un mot
     // et on initialise une nouvelle partie et on la stocke
     public boolean nouvellePartie(Joueur joueur) {
-        Optional<Partie> partieEnCours = partieRepository.getPartieEnregistree(joueur);
-        if (partieEnCours.isEmpty()) {
-            String motADeviner = serviceTirageMot.tirageMotAleatoire();
-            Partie nouvellePartie = Partie.create(joueur, motADeviner);
-            partieRepository.create(nouvellePartie);
-            return true;
-        }
-        return false;
+        return partieRepository.getPartieEnregistree(joueur)
+                .filter(partie -> !partie.isTerminee())
+                .isEmpty() && createNewPartie(joueur);
+    }
+
+    private boolean createNewPartie(Joueur joueur) {
+        String motADeviner = serviceTirageMot.tirageMotAleatoire();
+        Partie nouvellePartie = Partie.create(joueur, motADeviner);
+        partieRepository.create(nouvellePartie);
+        return true;
     }
 
     // on récupère éventuellement la partie enregistrée pour le joueur
     // si la partie n'est pas une partie en cours, on renvoie une erreur
     // sinon on retourne le resultat du mot proposé
     public ResultatPartie evaluation(Joueur joueur, String motPropose) {
-        Optional<Partie> partieEnCours = partieRepository.getPartieEnregistree(joueur);
-        if (partieEnCours.isEmpty() || partieEnCours.get().isTerminee()) {
-            return ResultatPartie.ERROR;
-        }
-        return calculeResultat(partieEnCours.get(), motPropose);
+        return partieRepository.getPartieEnregistree(joueur)
+                .filter(partie -> !partie.isTerminee())
+                .map(partie -> calculeResultat(partie, motPropose))
+                .orElse(ResultatPartie.ERROR);
     }
 
     // on évalue le résultat du mot proposé pour le tour de jeu
-    // on met à jour la bd pour la partie
-    // on retourne le résulat de la partie
+    // on, met à jour la bd pour la partie
+    // on, retourne le résulat de la partie
     private ResultatPartie calculeResultat(Partie partie, String motPropose) {
-        if (partie == null) {
-            throw new IllegalArgumentException("Partie must not be null");
-        }
-
         Reponse reponse = partie.tourDeJeu(motPropose);
-
-        boolean isTermine = partie.isTerminee();
         partieRepository.update(partie);
-        return ResultatPartie.create(reponse, isTermine);
-    }
-
-    // si la partie en cours est vide, on renvoie false
-    // sinon, on évalue si la partie est terminée
-    private boolean isJeuEnCours(Optional<Partie> partieEnCours) {
-        if (partieEnCours.isEmpty()) {
-            return false;
-        }
-        else {
-            return !partieEnCours.get().isTerminee();
-        }
+        return ResultatPartie.create(reponse, partie.isTerminee());
     }
 }

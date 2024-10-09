@@ -13,6 +13,5 @@ public class ServiceTirageMot {
     public String tirageMotAleatoire() {
         int index = nbAleatoire.next(repository.nbMaxMots());
         return repository.getMotByIndex(index);
-
     }
 }

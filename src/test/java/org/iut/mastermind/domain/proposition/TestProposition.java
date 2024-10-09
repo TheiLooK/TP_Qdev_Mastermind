@@ -6,11 +6,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.iut.mastermind.domain.proposition.Lettre.*;
 
 @DisplayName("Test sur la proposition:")
-public class TestProposition {
+class TestProposition {
 
     @Test
     @DisplayName("une lettre est incorrecte")
-    public void casLettreIncorrecte() {
+    void casLettreIncorrecte() {
         var mot = new MotSecret("S");
         var reponse = mot.compareProposition("Z");
         assertResultat(reponse, INCORRECTE);
@@ -18,7 +18,7 @@ public class TestProposition {
 
     @Test
     @DisplayName("une lettre est placée")
-    public void casLettrePlacee() {
+    void casLettrePlacee() {
         var mot = new MotSecret("S");
         var reponse = mot.compareProposition("S");
         assertResultat(reponse, PLACEE);
@@ -26,7 +26,7 @@ public class TestProposition {
 
     @Test
     @DisplayName("une lettre est incorrecte, une non placée")
-    public void casDeuxiemeLettreMalPlacee() {
+    void casDeuxiemeLettreMalPlacee() {
         var mot = new MotSecret("SO");
         var reponse = mot.compareProposition("ZS");
         assertResultat(reponse,  INCORRECTE, NON_PLACEE);
@@ -34,7 +34,7 @@ public class TestProposition {
 
     @Test
     @DisplayName("une lettre est incorrecte, non placée, placée")
-    public void casCombinaisons() {
+    void casCombinaisons() {
         var mot = new MotSecret("SOL");
         var reponse = mot.compareProposition("ZSL");
         assertResultat(reponse,  INCORRECTE, NON_PLACEE, PLACEE);

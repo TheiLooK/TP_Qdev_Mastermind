@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Test du tirage aléatoire:")
-public class TestServiceTirageMot {
+class TestServiceTirageMot {
 
     private static final int NB_MAX_MOTS = 3 ;
     private static final int MOT_NB = 2 ;

@@ -15,13 +15,12 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Test nouvelle partie:")
-public class TestNouvellePartie {
+class TestNouvellePartie {
     private static final Joueur JOUEUR = new Joueur("Alice");
     private static final String MOT_CORRECT = "SOLID";
     @Mock
@@ -36,7 +35,7 @@ public class TestNouvellePartie {
     @Test
     @DisplayName("est correctement initialisée")
     void doitInitialiserNouvellePartie() {
-        givenMotSelectionne(MOT_CORRECT);
+        givenMotSelectionne();
         mastermind.nouvellePartie(JOUEUR);
         Partie partie = getPartieEnregistree();
         assertThat(partie.getMot()).isEqualTo(MOT_CORRECT);
@@ -48,26 +47,25 @@ public class TestNouvellePartie {
     @DisplayName("ne peut pas redémarrer")
     void nePeutPasRedemarrerUnePartie() {
         when(partieRepository
-                .getPartieEnregistree(eq(JOUEUR)))
+                .getPartieEnregistree(JOUEUR))
                 .thenReturn(Optional.of(Partie.create(JOUEUR, MOT_CORRECT)));
         var succes = mastermind.nouvellePartie(JOUEUR);
         assertThat(succes).isFalse();
     }
-    private void givenMotSelectionne(String motSelectionne) {
+    private void givenMotSelectionne() {
         int motNumero = 2;
         when(nombreAleatoire.next(anyInt()))
                 .thenReturn(motNumero);
         when(motsRepository
                 .getMotByIndex(motNumero))
-                .thenReturn(motSelectionne);
+                .thenReturn(TestNouvellePartie.MOT_CORRECT);
     }
 
     private Partie getPartieEnregistree() {
         var argPartie = ArgumentCaptor.forClass(Partie.class);
         verify(partieRepository)
                 .create(argPartie.capture());
-        var partie = argPartie.getValue();
-        return partie;
+        return argPartie.getValue();
     }
 }
 

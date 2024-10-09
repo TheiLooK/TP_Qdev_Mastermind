@@ -28,6 +28,6 @@ class TestJoueur {
     void joueursHashcodeEgal() {
         Joueur a = new Joueur("meme nom");
         Joueur b = new Joueur("meme nom");
-        assertThat(a.hashCode()).isEqualTo(b.hashCode());
+        assertThat(a).hasSameHashCodeAs(b);
     }
 }

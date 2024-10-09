@@ -3,6 +3,8 @@ package org.iut.mastermind.domain.proposition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
+
 import static java.util.Collections.unmodifiableList;
 
 public class Reponse {
@@ -21,22 +23,15 @@ public class Reponse {
     // on construit le résultat en analysant chaque lettre
     // du mot proposé
     public void compare(String essai) {
-        for (int i = 0; i < essai.length(); i++) {
-            resultat.add(evaluationCaractere(essai.charAt(i), i));
-        }
+        IntStream.range(0, essai.length())
+                .mapToObj(i -> evaluationCaractere(essai.charAt(i), i))
+                .forEach(resultat::add);
     }
 
     // si toutes les lettres sont placées
     public boolean lettresToutesPlacees() {
-        if (resultat.size() == motSecret.length()) {
-            for (Lettre lettre : resultat) {
-                if (lettre != Lettre.PLACEE) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
+        return resultat.size() == motSecret.length() &&
+                resultat.stream().allMatch(lettre -> lettre == Lettre.PLACEE);
     }
 
     public List<Lettre> lettresResultat() {
@@ -56,12 +51,9 @@ public class Reponse {
 
     // le caractère est présent dans le mot secret
     private boolean estPresent(char carCourant) {
-        for (int i = 0; i < motSecret.length(); i++) {
-            if (i != carCourant && motSecret.charAt(i) == carCourant) {
-                return true;
-            }
-        }
-        return false;    }
+        return IntStream.range(0, motSecret.length())
+                .anyMatch(i -> i != carCourant && motSecret.charAt(i) == carCourant);
+    }
 
     // le caractère est placé dans le mot secret
     private boolean estPlace(char carCourant, int index) {

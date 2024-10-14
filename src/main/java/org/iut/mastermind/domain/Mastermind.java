@@ -29,9 +29,7 @@ public class Mastermind {
     }
 
     private boolean createNewPartie(Joueur joueur) {
-        String motADeviner = serviceTirageMot.tirageMotAleatoire();
-        Partie nouvellePartie = Partie.create(joueur, motADeviner);
-        partieRepository.create(nouvellePartie);
+        partieRepository.create(Partie.create(joueur, serviceTirageMot.tirageMotAleatoire()));
         return true;
     }
 
